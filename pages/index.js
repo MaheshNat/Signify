@@ -124,9 +124,7 @@ export default function Page() {
 
     async function load() {
       const videoLoaded = await initCamera();
-      model = await tf.loadLayersModel(
-        'https://4977e0ca76d1.ngrok.io/modelv3.2raw_tfjs/model.json'
-      );
+      model = await tf.loadLayersModel('modelv3.2raw_tfjs/model.json');
       await cv.load();
       videoLoaded.play();
       setInterval(processImage, 0);
