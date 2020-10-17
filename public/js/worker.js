@@ -1,10 +1,42 @@
+function predict({ msg, payload }) {
+  // const begin1 = Date.now();
+  const image = new ImageData(payload.data, payload.width, payload.height);
+  // console.log('image data creation done in:', (Date.now() - begin1) / 1000);
+
+  // const begin2 = Date.now();
+  const tensor = tf.browser
+    .fromPixels(image)
+    .sub(tf.tensor1d([103.939, 116.779, 123.68]))
+    .expandDims();
+  // console.log(
+  //   'parsing of image data into tensor done in:',
+  //   (Date.now() - begin2) / 1000
+  // );
+
+  // const begin3 = Date.now();
+  const prediction = model.predict(tensor);
+  // console.log('prediction done in:', (Date.now() - begin3) / 1000);
+
+  // const begin4 = Date.now();
+  const predictedLetter = prediction.argMax(1).dataSync();
+  // console.log('argmax of data done in:', (Date.now() - begin4) / 1000);
+
+  // const begin5 = Date.now();
+  const confidence = prediction.dataSync()[0];
+  postMessage({ msg, payload: [predictedLetter, confidence] });
+  // console.log('confidence retrieved in:', (Date.now() - begin5) / 1000);
+  prediction.data().then((data) => {
+    const confidence = data[predictedLetter];
+    postMessage({ msg, payload: [predictedLetter, confidence] });
+  });
+}
+
 /**
  * With OpenCV we have to work the images as cv.Mat (matrices),
  * so the first thing we have to do is to transform the
  * ImageData to a type that openCV can recognize.
  */
 function imageProcessing({ msg, payload }) {
-  if (!payload) return;
   const img = cv.matFromImageData(payload);
   let result = new cv.Mat();
 
@@ -20,6 +52,7 @@ function imageProcessing({ msg, payload }) {
   );
   // You can try more different parameters
   cv.cvtColor(result, result, cv.COLOR_GRAY2RGB);
+
   postMessage({ msg, payload: imageDataFromMat(result) });
 }
 
@@ -64,7 +97,7 @@ function imageDataFromMat(mat) {
  *  functions. We will return in a callback if it has been resolved
  *  well (true) or if there has been a timeout (false).
  */
-function waitForOpencv(callbackFn, waitTimeMs = 30000, stepTimeMs = 100) {
+function waitForScripts(callbackFn, waitTimeMs = 30000, stepTimeMs = 100) {
   if (cv.Mat) callbackFn(true);
 
   let timeSpentMs = 0;
@@ -89,14 +122,25 @@ onmessage = function (e) {
     case 'load': {
       // Import Webassembly script
       self.importScripts('./opencv.js');
-      waitForOpencv(function (success) {
-        if (success) postMessage({ msg: e.data.msg });
-        else throw new Error('Error on loading OpenCV');
+      self.importScripts(
+        'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.6.0/dist/tf.min.js'
+      );
+      // tf.setBackend('cpu');
+      // console.log(tf.getBackend());
+      waitForScripts(async function (success) {
+        if (success) {
+          self.model = await tf.loadLayersModel(
+            '../modelv3.2raw_tfjs/model.json'
+          );
+          postMessage({ msg: e.data.msg });
+        } else throw new Error('Error on loading OpenCV');
       });
       break;
     }
     case 'imageProcessing':
       return imageProcessing(e.data);
+    case 'predict':
+      return predict(e.data);
     default:
       break;
   }

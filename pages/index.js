@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import cv from '../services/cv';
-import * as tf from '@tensorflow/tfjs';
+import service from '../services/service';
 import 'bootswatch/dist/darkly/bootstrap.min.css';
 
 // We'll limit the processing size to 200px.
@@ -51,7 +50,6 @@ export default function Page() {
   const videoElement = useRef(null);
   const canvasEl = useRef(null);
   const outputCanvasEl = useRef(null);
-  let model;
   let [letter, setLetter] = useState(null);
   let [loading, setLoading] = useState(true);
   let [confidence, setConfidence] = useState(0);
@@ -67,26 +65,23 @@ export default function Page() {
       typeof videoElement.current !== 'undefined' &&
       videoElement.current !== null
     ) {
-      const ctx = canvasEl.current.getContext('2d');
-      ctx.drawImage(videoElement.current, 0, 0, maxVideoSize, maxVideoSize);
-      const image = ctx.getImageData(0, 0, maxVideoSize, maxVideoSize);
-      // Processing image
-      const processedImage = await cv.imageProcessing(image);
-      // Render the processed image to the canvas
-      outputCanvasEl.current
-        .getContext('2d')
-        .putImageData(processedImage.data.payload, 0, 0);
-      const prediction = await model.predict(
-        tf.browser
-          .fromPixels(outputCanvasEl.current)
-          .sub(tf.tensor1d([103.939, 116.779, 123.68]))
-          .expandDims()
-      );
-      const max = await prediction.argMax(1).data();
-      setLetter(LETTERS[max]);
-      prediction.data().then((predictionData) => {
-        setConfidence(predictionData[max]);
-      });
+      while (true) {
+        const ctx = canvasEl.current.getContext('2d');
+        ctx.drawImage(videoElement.current, 0, 0, maxVideoSize, maxVideoSize);
+        const image = ctx.getImageData(0, 0, maxVideoSize, maxVideoSize);
+        // Processing image
+        const processedImage = await service.imageProcessing(image);
+        // Render the processed image to the canvas
+        const ctxOutput = outputCanvasEl.current.getContext('2d');
+        ctxOutput.putImageData(processedImage.data.payload, 0, 0);
+
+        const prediction = await service.predict(processedImage.data.payload);
+
+        const [predictedLetter, confidence] = prediction.data.payload;
+
+        setLetter(LETTERS[predictedLetter]);
+        setConfidence(confidence);
+      }
     }
   }
 
@@ -124,10 +119,9 @@ export default function Page() {
 
     async function load() {
       const videoLoaded = await initCamera();
-      model = await tf.loadLayersModel('modelv3.2raw_tfjs/model.json');
-      await cv.load();
+      await service.load();
       videoLoaded.play();
-      setInterval(processImage, 0);
+      setTimeout(processImage, 0);
       setLoading(false);
       return videoLoaded;
     }

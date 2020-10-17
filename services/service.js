@@ -11,7 +11,7 @@ class CV {
     return new Promise((res, rej) => {
       let interval = setInterval(() => {
         const status = this._status[msg];
-        if (!status || status == undefined) res(true);
+        // if (!status || status == undefined) res(true);
         if (status[0] === 'done') {
           res(status[1]);
         } else if (status[0] === 'error') rej(status[1]);
@@ -33,7 +33,7 @@ class CV {
    */
   load() {
     this._status = {};
-    this.worker = new Worker(`/js/cv.worker.js`); // load worker
+    this.worker = new Worker('/js/worker.js'); // load worker
 
     // Capture events and save [status, event] inside the _status object
     this.worker.onmessage = (e) => (this._status[e.data.msg] = ['done', e]);
@@ -50,6 +50,10 @@ class CV {
    */
   imageProcessing(payload) {
     return this._dispatch({ msg: 'imageProcessing', payload });
+  }
+
+  predict(payload) {
+    return this._dispatch({ msg: 'predict', payload });
   }
 }
 
