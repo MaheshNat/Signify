@@ -34,6 +34,7 @@ const LETTERS = [
   '_SPACE',
   '_NOTHING',
 ];
+const BATCH_SIZE = 2;
 
 /**
  * What we're going to render is:
@@ -53,6 +54,7 @@ export default function Page() {
   let [letter, setLetter] = useState(null);
   let [loading, setLoading] = useState(true);
   let [confidence, setConfidence] = useState(0);
+  let [fps, setFps] = useState(0);
 
   /**
    * In the onClick event we'll capture a frame within
@@ -65,6 +67,29 @@ export default function Page() {
       typeof videoElement.current !== 'undefined' &&
       videoElement.current !== null
     ) {
+      // while (true) {
+      //   let frames = [];
+      //   for (let i = 0; i < BATCH_SIZE; i++) {
+      //     const ctx = canvasEl.current.getContext('2d');
+      //     ctx.drawImage(videoElement.current, 0, 0, maxVideoSize, maxVideoSize);
+      //     const image = ctx.getImageData(0, 0, maxVideoSize, maxVideoSize);
+      //     // Processing image
+      //     const processedImage = await service.imageProcessing(image);
+      //     // Render the processed image to the canvas
+      //     const ctxOutput = outputCanvasEl.current.getContext('2d');
+      //     ctxOutput.putImageData(processedImage.data.payload, 0, 0);
+      //     frames.push(processedImage.data.payload);
+      //   }
+
+      //   const prediction = await service.predict(frames);
+
+      //   const [predictedLetter, confidence] = prediction.data.payload;
+
+      //   setLetter(LETTERS[predictedLetter]);
+      //   setConfidence(confidence);
+      // }
+      let frames = 0;
+      let start = Date.now();
       while (true) {
         const ctx = canvasEl.current.getContext('2d');
         ctx.drawImage(videoElement.current, 0, 0, maxVideoSize, maxVideoSize);
@@ -81,6 +106,12 @@ export default function Page() {
 
         setLetter(LETTERS[predictedLetter]);
         setConfidence(confidence);
+        frames++;
+        if (frames === 10) {
+          setFps(10 / ((Date.now() - start) / 1000));
+          frames = 0;
+          start = Date.now();
+        }
       }
     }
   }
@@ -170,7 +201,8 @@ export default function Page() {
             >
               {letter}
             </h1>
-            <h4>Confidence: {confidence}</h4>
+            <h4>Confidence: {confidence.toFixed(3)}</h4>
+            <h4>FPS: {fps.toFixed(3)}</h4>
           </div>
         </div>
       </div>
