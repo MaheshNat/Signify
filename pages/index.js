@@ -31,10 +31,10 @@ const LETTERS = [
   'X',
   'Y',
   'Z',
-  '_SPACE',
   '_NOTHING',
+  '_SPACE',
 ];
-const BATCH_SIZE = 2;
+const THRESHOLD = 6;
 
 /**
  * What we're going to render is:
@@ -55,6 +55,7 @@ export default function Page() {
   let [loading, setLoading] = useState(true);
   let [confidence, setConfidence] = useState(0);
   let [fps, setFps] = useState(0);
+  let [words, setWords] = useState('');
 
   /**
    * In the onClick event we'll capture a frame within
@@ -67,29 +68,10 @@ export default function Page() {
       typeof videoElement.current !== 'undefined' &&
       videoElement.current !== null
     ) {
-      // while (true) {
-      //   let frames = [];
-      //   for (let i = 0; i < BATCH_SIZE; i++) {
-      //     const ctx = canvasEl.current.getContext('2d');
-      //     ctx.drawImage(videoElement.current, 0, 0, maxVideoSize, maxVideoSize);
-      //     const image = ctx.getImageData(0, 0, maxVideoSize, maxVideoSize);
-      //     // Processing image
-      //     const processedImage = await service.imageProcessing(image);
-      //     // Render the processed image to the canvas
-      //     const ctxOutput = outputCanvasEl.current.getContext('2d');
-      //     ctxOutput.putImageData(processedImage.data.payload, 0, 0);
-      //     frames.push(processedImage.data.payload);
-      //   }
-
-      //   const prediction = await service.predict(frames);
-
-      //   const [predictedLetter, confidence] = prediction.data.payload;
-
-      //   setLetter(LETTERS[predictedLetter]);
-      //   setConfidence(confidence);
-      // }
       let frames = 0;
       let start = Date.now();
+      let prevLetter = '';
+      let count = 0;
       while (true) {
         const ctx = canvasEl.current.getContext('2d');
         ctx.drawImage(videoElement.current, 0, 0, maxVideoSize, maxVideoSize);
@@ -103,8 +85,28 @@ export default function Page() {
         const prediction = await service.predict(processedImage.data.payload);
 
         const [predictedLetter, confidence] = prediction.data.payload;
+        const letterValue = LETTERS[predictedLetter];
 
-        setLetter(LETTERS[predictedLetter]);
+        setLetter(letterValue);
+        if (letterValue !== prevLetter) {
+          if (count > THRESHOLD)
+            setWords(
+              (state, props) =>
+                state +
+                (prevLetter === '_NOTHING'
+                  ? ''
+                  : prevLetter === '_SPACE'
+                  ? ' '
+                  : prevLetter)
+            );
+          count = 0;
+        } else {
+          count++;
+        }
+        prevLetter = letterValue;
+        // speechSynthesis.speak(
+        //   new SpeechSynthesisUtterance(letter)
+        // );
         setConfidence(confidence);
         frames++;
         if (frames === 10) {
@@ -200,6 +202,23 @@ export default function Page() {
               }}
             >
               {letter}
+            </h1>
+          </div>
+        </div>
+        <div
+          className="row justify-content-center text-center"
+          style={{ marginTop: '2em' }}
+        >
+          <div className="col-xs-12">
+            <h2>Predicted Words:</h2>
+            <h1
+              style={{
+                borderRadius: 10,
+                border: '2px solid #FFFFFF',
+                padding: '1em',
+              }}
+            >
+              {words}
             </h1>
             <h4>Confidence: {confidence.toFixed(3)}</h4>
             <h4>FPS: {fps.toFixed(3)}</h4>

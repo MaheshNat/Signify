@@ -16,6 +16,10 @@
 /build
 
 # misc
+bruh.py
+message-2.json
+message-3.json
+test.js
 .prettierrc
 .DS_Store
 *.pem
