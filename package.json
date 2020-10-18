@@ -12,7 +12,9 @@
     "@tensorflow/tfjs": "^2.6.0",
     "@tensorflow/tfjs-backend-wasm": "^2.6.0",
     "bootswatch": "^4.5.2",
+    "dictionary-en": "^3.0.1",
     "next": "9.5.5",
+    "nspell": "^2.1.4",
     "react": "16.14.0",
     "react-dom": "16.14.0"
   }

@@ -34,7 +34,7 @@ const LETTERS = [
   '_NOTHING',
   '_SPACE',
 ];
-const THRESHOLD = 6;
+const THRESHOLD = 5;
 
 /**
  * What we're going to render is:
@@ -92,12 +92,7 @@ export default function Page() {
           if (count > THRESHOLD)
             setWords(
               (state, props) =>
-                state +
-                (prevLetter === '_NOTHING'
-                  ? ''
-                  : prevLetter === '_SPACE'
-                  ? ' '
-                  : prevLetter)
+                state + (prevLetter === '_SPACE' ? ' ' : prevLetter)
             );
           count = 0;
         } else {
