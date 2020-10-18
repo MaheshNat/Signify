@@ -1,33 +1,4 @@
 function predict({ msg, payload }) {
-  // // const begin2 = Date.now();
-  // const tensor = tf.concat(
-  //   payload.map((image) =>
-  //   tf.browser
-  //     .fromPixels(image)
-  //     .sub(tf.tensor1d([103.939, 116.779, 123.68]))
-  //     .expandDims()
-  // )
-  // );
-  // // console.log(
-  // //   'parsing of image data into tensor done in:',
-  // //   (Date.now() - begin2) / 1000
-  // // );
-  // const begin3 = Date.now();
-  // 0;
-  // const prediction = model.predict(tensor);
-  // // console.log('prediction done in:', (Date.now() - begin3) / 1000);;
-  // // const begin4 = Date.now();
-  // const predictedLetter = prediction.argMax(1).dataSync();
-  // // console.log('argmax of data done in:', (Date.now() - begin4) / 1000);
-  // console.log(predictedLetter);
-  // // const begin5 = Date.now();
-  // const confidence = prediction.dataSync()[0];
-  // postMessage({ msg, payload: [predictedLetter, confidence] });
-  // // console.log('confidence retrieved in:', (Date.now() - begin5) / 1000);
-  // prediction.data().then((data) => {
-  //   const confidence = data[predictedLetter];
-  //   postMessage({ msg, payload: [predictedLetter, confidence] });
-  // });
   const tensor = tf.browser
     .fromPixels(payload)
     .div(tf.scalar(127.5))
@@ -145,7 +116,8 @@ onmessage = function (e) {
         if (success) {
           self.model = await tf.loadLayersModel(
             // '../modelv3.2raw_tfjs/model.json'
-            '../modelv4alpha2.2raw_tfjs/model.json'
+            // '../modelv4alpha2.2raw_tfjs/model.json',
+            '../modelv4alpha3raw_tfjs/model.json'
           );
           postMessage({ msg: e.data.msg });
           console.log(tf.getBackend());
