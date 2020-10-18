@@ -1115,13 +1115,6 @@
     "@types/seedrandom" "2.4.27"
     seedrandom "2.4.3"
 
-"@tensorflow/tfjs-backend-wasm@^2.6.0":
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/@tensorflow/tfjs-backend-wasm/-/tfjs-backend-wasm-2.6.0.tgz#e6d43d09a52aa92050f29f779e1ae4f4afe03991"
-  integrity sha512-yrhKcZQ3xjStXKTCvg6aQzgmE77vFrIoGW3kuhJrrVJfbihnrekuysPEXtl1UnYOlgGTCM/JrSC0P0sNK9Rq6A==
-  dependencies:
-    "@types/emscripten" "~0.0.34"
-
 "@tensorflow/tfjs-backend-webgl@2.6.0":
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/@tensorflow/tfjs-backend-webgl/-/tfjs-backend-webgl-2.6.0.tgz#3855c254a86daf28511530c36bb61938acf26740"
@@ -1180,11 +1173,6 @@
     core-js "3"
     regenerator-runtime "^0.13.5"
     yargs "^16.0.3"
-
-"@types/emscripten@~0.0.34":
-  version "0.0.34"
-  resolved "https://registry.yarnpkg.com/@types/emscripten/-/emscripten-0.0.34.tgz#12b4a344274fb102ff2f6c877b37587bc3e46008"
-  integrity sha512-QSb9ojDincskc+uKMI0KXp8e1NALFINCrMlp8VGKGcTSxeEyRTTKyjWw75NYrCZHUsVEEEpr1tYHpbtaC++/sQ==
 
 "@types/json-schema@^7.0.5":
   version "7.0.6"
@@ -1571,6 +1559,14 @@ atob@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
+
+autocorrect@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/autocorrect/-/autocorrect-1.2.0.tgz#f88eced11d3ceca616b376e93d61a5e7c034b2bb"
+  integrity sha1-+I7O0R087KYWs3bpPWGl58A0srs=
+  dependencies:
+    leven "^2.0.0"
+    word-list "^1.0.1"
 
 babel-plugin-dynamic-import-node@^2.3.3:
   version "2.3.3"
@@ -2350,11 +2346,6 @@ des.js@^1.0.0:
     inherits "^2.0.1"
     minimalistic-assert "^1.0.0"
 
-dictionary-en@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/dictionary-en/-/dictionary-en-3.0.1.tgz#bebcd9efcd7e2adf45470eb8cded9ea6010ad45e"
-  integrity sha512-IMVLlTXYGlKwmzTMvRzLDx/BCl9Tq3l56xY7URaH4eZMIufl7myaaXJJyTH6qdjXOxKMOkzE2t3rp3Ql7QciBA==
-
 diffie-hellman@^5.0.0:
   version "5.0.3"
   resolved "https://registry.yarnpkg.com/diffie-hellman/-/diffie-hellman-5.0.3.tgz#40e8ee98f55a2149607146921c63e1ae5f3d2875"
@@ -3091,11 +3082,6 @@ is-buffer@^1.1.5:
   resolved "https://registry.yarnpkg.com/is-buffer/-/is-buffer-1.1.6.tgz#efaa2ea9daa0d7ab2ea13a97b2b8ad51fefbe8be"
   integrity sha512-NcdALwpXkTm5Zvvbk7owOUSvVvBKDgKP5/ewfXEznmQFfs4ZRmanOeKBTjRVjka3QFoN6XJ+9F3USqfHqTaU5w==
 
-is-buffer@^2.0.0:
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/is-buffer/-/is-buffer-2.0.4.tgz#3e572f23c8411a5cfd9557c849e3665e0b290623"
-  integrity sha512-Kq1rokWXOPXWuaMAqZiJW4XxsmD9zGx9q4aePabbn3qCRGedtH7Cm+zV8WETitMfu1wdh+Rvd6w5egwSngUX2A==
-
 is-callable@^1.1.4, is-callable@^1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/is-callable/-/is-callable-1.2.2.tgz#c7c6715cd22d4ddb48d3e19970223aceabb080d9"
@@ -3314,6 +3300,11 @@ klona@^2.0.3:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/klona/-/klona-2.0.4.tgz#7bb1e3affb0cb8624547ef7e8f6708ea2e39dfc0"
   integrity sha512-ZRbnvdg/NxqzC7L9Uyqzf4psi1OM4Cuc+sJAkQPjO6XkQIJTNbfK2Rsmbw8fx1p2mkZdp2FZYo2+LwXYY/uwIA==
+
+leven@^2.0.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/leven/-/leven-2.1.0.tgz#c2e7a9f772094dee9d34202ae8acce4687875580"
+  integrity sha1-wuep93IJTe6dNCAq6KzORoeHVYA=
 
 leven@^3.1.0:
   version "3.1.0"
@@ -3801,13 +3792,6 @@ normalize-path@^3.0.0, normalize-path@~3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/normalize-path/-/normalize-path-3.0.0.tgz#0dcd69ff23a1c9b11fd0978316644a0388216a65"
   integrity sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==
-
-nspell@^2.1.4:
-  version "2.1.4"
-  resolved "https://registry.yarnpkg.com/nspell/-/nspell-2.1.4.tgz#2057f11ad19bf43ee510d2c2f6ba4082865bc9e6"
-  integrity sha512-nlMEyhE6kyR2GoTm2ldrVlEmK5xgFHXayQEqLhb+3yYa8ncKtjsoYJo3ahYwrZsNaCZr822S5ZRlEqYdMQy9xw==
-  dependencies:
-    is-buffer "^2.0.0"
 
 object-assign@^4.1.1:
   version "4.1.1"
@@ -5181,6 +5165,11 @@ whatwg-url@^7.0.0:
     lodash.sortby "^4.7.0"
     tr46 "^1.0.1"
     webidl-conversions "^4.0.2"
+
+word-list@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/word-list/-/word-list-1.0.1.tgz#84c4fe3b9187acd310f53c91b40c16f859d013bb"
+  integrity sha1-hMT+O5GHrNMQ9TyRtAwW+FnQE7s=
 
 worker-farm@^1.7.0:
   version "1.7.0"

@@ -56,6 +56,7 @@ export default function Page() {
   let [confidence, setConfidence] = useState(0);
   let [fps, setFps] = useState(0);
   let [words, setWords] = useState('');
+  let spell;
 
   /**
    * In the onClick event we'll capture a frame within
@@ -72,6 +73,26 @@ export default function Page() {
       let start = Date.now();
       let prevLetter = '';
       let count = 0;
+      let _words = '';
+
+      const processWord = () => {
+        let wordsSplit = _words.split(' ');
+        fetch(`/api/autocorrect?word=${wordsSplit[wordsSplit.length - 1]}`)
+          .then((res) => res.json())
+          .then((json) => {
+            const correctedWord = json['correctedWord'];
+            speechSynthesis.speak(new SpeechSynthesisUtterance(correctedWord));
+            wordsSplit.pop();
+            _words =
+              wordsSplit.join(' ') + ' ' + correctedWord.toUpperCase() + ' ';
+            setWords(
+              wordsSplit.join(' ') + ' ' + correctedWord.toUpperCase() + ' '
+            );
+          });
+      };
+
+      videoElement.current.addEventListener('ended', () => processWord());
+
       while (true) {
         const ctx = canvasEl.current.getContext('2d');
         ctx.drawImage(videoElement.current, 0, 0, maxVideoSize, maxVideoSize);
@@ -89,19 +110,21 @@ export default function Page() {
 
         setLetter(letterValue);
         if (letterValue !== prevLetter) {
-          if (count > THRESHOLD)
-            setWords(
-              (state, props) =>
-                state + (prevLetter === '_SPACE' ? ' ' : prevLetter)
-            );
+          if (count > THRESHOLD) {
+            if (prevLetter === '_SPACE') processWord();
+            else {
+              _words = _words + (prevLetter === '_NOTHING' ? '' : prevLetter);
+              setWords(
+                (state, props) =>
+                  state + (prevLetter === '_NOTHING' ? '' : prevLetter)
+              );
+            }
+          }
           count = 0;
         } else {
           count++;
         }
         prevLetter = letterValue;
-        // speechSynthesis.speak(
-        //   new SpeechSynthesisUtterance(letter)
-        // );
         setConfidence(confidence);
         frames++;
         if (frames === 10) {
@@ -123,15 +146,17 @@ export default function Page() {
       videoElement.current.height = maxVideoSize;
 
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          audio: false,
-          video: {
-            facingMode: 'user',
-            width: maxVideoSize,
-            height: maxVideoSize,
-          },
-        });
-        videoElement.current.srcObject = stream;
+        // const stream = await navigator.mediaDevices.getUserMedia({
+        //   audio: false,
+        //   video: {
+        //     facingMode: 'user',
+        //     width: maxVideoSize,
+        //     height: maxVideoSize,
+        //   },
+        // });
+        // videoElement.current.srcObject = stream;
+        videoElement.current.src = 'message3.mp4';
+        videoElement.current.playbackRate = 0.87;
 
         return new Promise((resolve) => {
           videoElement.current.onloadedmetadata = () => {
@@ -148,7 +173,8 @@ export default function Page() {
     async function load() {
       const videoLoaded = await initCamera();
       await service.load();
-      videoLoaded.play();
+      setTimeout(() => videoLoaded.play(), 10000);
+      // spell = nspell(dict);
       setTimeout(processImage, 0);
       setLoading(false);
       return videoLoaded;
@@ -188,8 +214,8 @@ export default function Page() {
           style={{ marginTop: '2em' }}
         >
           <div className="col-xs-12">
-            <h2>Predicted Letter:</h2>
-            <h1
+            <h5>Predicted Letter:</h5>
+            <h4
               style={{
                 borderRadius: 10,
                 border: '2px solid #FFFFFF',
@@ -197,7 +223,7 @@ export default function Page() {
               }}
             >
               {letter}
-            </h1>
+            </h4>
           </div>
         </div>
         <div
