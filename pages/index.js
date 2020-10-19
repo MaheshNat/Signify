@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import service from '../services/service';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHandPaper } from '@fortawesome/free-solid-svg-icons';
-import { FormCheck } from 'react-bootstrap';
 
 // We'll limit the processing size to 200px.
 const maxVideoSize = 224;
@@ -64,7 +63,6 @@ export default function Page() {
   let [loading, setLoading] = useState(true);
   let [fps, setFps] = useState(0);
   let [words, setWords] = useState('');
-  let [disableDemo, setDisableDemo] = useState(false);
 
   /**
    * In the onClick event we'll capture a frame within
@@ -147,34 +145,6 @@ export default function Page() {
     }
   }
 
-  const setVideoStream = () => {
-    setLoading(true);
-    navigator.mediaDevices
-      .getUserMedia({
-        audio: false,
-        video: {
-          facingMode: 'user',
-          width: maxVideoSize,
-          height: maxVideoSize,
-        },
-      })
-      .then((stream) => {
-        videoElement.current.srcObject = stream;
-        videoElement.current.onloadedmetadata = () => {
-          setLoading(false);
-        };
-      });
-  };
-
-  const setVideoDemo = () => {
-    setLoading(true);
-    videoElement.current.src = 'message3.mp4';
-    videoElement.current.playbackRate = 0.8;
-    videoElement.current.onloadedmetadata = () => {
-      setLoading(false);
-    };
-  };
-
   /**
    * In the useEffect hook we'll load the video
    * element to show what's on camera.
@@ -185,8 +155,15 @@ export default function Page() {
       videoElement.current.height = maxVideoSize;
 
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        if (disableDemo) setVideoStream();
-        else setVideoDemo();
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: {
+            facingMode: 'user',
+            width: maxVideoSize,
+            height: maxVideoSize,
+          },
+        });
+        videoElement.current.srcObject = stream;
 
         return new Promise((resolve) => {
           videoElement.current.onloadedmetadata = () => {
@@ -203,7 +180,7 @@ export default function Page() {
     async function load() {
       const videoLoaded = await initCamera();
       await service.load();
-      setTimeout(() => videoLoaded.play(), 10000);
+      videoLoaded.play();
       setTimeout(processImage, 0);
       setLoading(false);
       return videoLoaded;
@@ -215,8 +192,8 @@ export default function Page() {
   return (
     <div style={{ marginTop: '2em' }}>
       <h1
-        className="text-center"
-        style={{ marginBottom: '0.5em', fontSize: '10vw' }}
+        className="text-center text-heading"
+        style={{ marginBottom: '0.5em' }}
       >
         <FontAwesomeIcon icon={faHandPaper} /> SIGNify
       </h1>
@@ -235,17 +212,6 @@ export default function Page() {
         <div className="row justify-content-center">
           <div className="col-xs-12 text-center">
             <video className="video" playsInline ref={videoElement} />
-            {/* <FormCheck
-              id="switchEnabled"
-              type="switch"
-              checked={disableDemo}
-              onChange={() => {
-                setDisableDemo((state, props) => !state);
-                if (disableDemo) setVideoStream();
-                else setVideoDemo();
-              }}
-              label="Disable Demo"
-            /> */}
           </div>
           <canvas
             style={{ display: 'none' }}
@@ -267,10 +233,10 @@ export default function Page() {
           style={{ marginTop: '2em' }}
         >
           <div className="col-xs-12">
-            <h5 style={{ fontSize: '5vw' }}>Predicted Letter:</h5>
+            <h5 className="text-letter">Predicted Letter:</h5>
             <h4
+              className="text-letter"
               style={{
-                fontSize: '4vw',
                 borderRadius: 10,
                 border: '2px solid #FFFFFF',
                 padding: '0.5em',
@@ -285,18 +251,18 @@ export default function Page() {
           style={{ marginTop: '2em' }}
         >
           <div className="col-xs-12">
-            <h2 style={{ fontSize: '5vw' }}>Predicted Words:</h2>
-            <h1
+            <h3 className="text-words">Predicted Words:</h3>
+            <h2
+              className="text-words"
               style={{
-                fontSize: '4vw',
                 borderRadius: 10,
                 border: '2px solid #FFFFFF',
                 padding: '1em',
               }}
             >
               {words}
-            </h1>
-            <p>FPS: {fps.toFixed(3)}</p>
+            </h2>
+            <p className="text-fps">FPS: {fps.toFixed(3)}</p>
           </div>
         </div>
       </div>

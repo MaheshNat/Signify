@@ -1,0 +1,26 @@
+.text-words {
+  font-size: 8vw;
+}
+.text-letter {
+  font-size: 5vw;
+}
+.text-heading {
+  font-size: 10vw;
+}
+.text-fps {
+  font-size: 3vw;
+}
+@media screen and (min-width: 800px) {
+  .text-words {
+    font-size: 64px;
+  }
+  .text-letter {
+    font-size: 40px;
+  }
+  .text-heading {
+    font-size: 80px;
+  }
+  .text-fps {
+    font-size: 24px;
+  }
+}

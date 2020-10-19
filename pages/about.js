@@ -35,7 +35,7 @@ const Page = () => {
               </code>
               <br />
               The above pipeline simply performs an adaptive threshold on a
-              grayscaled version on the image, highlighting its edge which make
+              grayscaled version on the image, highlighting its edges which make
               the image easier to process through the next step, the tensorflow
               model.
             </p>
@@ -57,7 +57,7 @@ const Page = () => {
               transfer learning from various different base convolutional neural
               network including vgg19, alexnet, and more, we settled on the
               architecture shown here, which both allowed the model to be run in
-              real time as well as be fairly accurate. We take the output of a
+              real time as well as be fairly accurate. We took the output of a
               pre-trained convolutional neural network (mobile net) and added
               three dense layers to alter the output to classify hand signs.
             </p>
@@ -81,13 +81,13 @@ const Page = () => {
               developed a small algorithm like the following: If the previous
               detected letter is different from the current detector letter, and
               the previous detected letter has been repeated at least x number
-              of times, then add the letter to the running predicted word. Then,
+              of times, then add the previous letter to the running predicted
+              word. However, the threshold x may change from letter to letter,
+              and we had to experiment with different values of x: smaller
+              values for letters which the model had trouble with, and larger
+              values for letters which the model was more confident with. Then,
               when a space character is detected, we run autocorrection and text
-              to speech as mentioned in the text below. However, the threshold x
-              may change from letter to letter, and we had to experiment with
-              different values of x: smaller values for letters which the model
-              had trouble with, and larger values for letters which the model
-              was more confident with.
+              to speech as mentioned in the text below.
             </p>
           </div>
         </div>
@@ -107,9 +107,9 @@ const Page = () => {
               100% perfect, which is why we included autocorrection. For the
               select times where the previous steps are not able to accurately
               translate a word, we use simple autocorrection to change it to the
-              nearest english word. Additionally, we used the browser speech API
-              to speak out loud the predicted word, allowing for even more use
-              cases.
+              nearest english word. Additionally, we used the browser text to
+              speech API to speak out loud the predicted word, allowing for even
+              more use cases.
             </p>
           </div>
         </div>
