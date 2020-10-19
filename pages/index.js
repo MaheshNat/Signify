@@ -216,9 +216,9 @@ export default function Page() {
     <div style={{ marginTop: '2em' }}>
       <h1
         className="text-center"
-        style={{ marginBottom: '0.5em', fontSize: 80 }}
+        style={{ marginBottom: '0.5em', fontSize: '10vw' }}
       >
-        <FontAwesomeIcon icon={faHandPaper} /> Signify
+        <FontAwesomeIcon icon={faHandPaper} /> SIGNify
       </h1>
       {loading && (
         <div className="row justify-content-center">
@@ -267,9 +267,10 @@ export default function Page() {
           style={{ marginTop: '2em' }}
         >
           <div className="col-xs-12">
-            <h5>Predicted Letter:</h5>
+            <h5 style={{ fontSize: '5vw' }}>Predicted Letter:</h5>
             <h4
               style={{
+                fontSize: '4vw',
                 borderRadius: 10,
                 border: '2px solid #FFFFFF',
                 padding: '0.5em',
@@ -284,9 +285,10 @@ export default function Page() {
           style={{ marginTop: '2em' }}
         >
           <div className="col-xs-12">
-            <h2>Predicted Words:</h2>
+            <h2 style={{ fontSize: '5vw' }}>Predicted Words:</h2>
             <h1
               style={{
+                fontSize: '4vw',
                 borderRadius: 10,
                 border: '2px solid #FFFFFF',
                 padding: '1em',

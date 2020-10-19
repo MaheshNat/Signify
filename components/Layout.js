@@ -9,7 +9,7 @@ const Layout = ({ children }) => {
     <>
       <Navbar bg="dark" variant="dark" expand="sm" sticky="top">
         <Navbar.Brand href="/">
-          <FontAwesomeIcon icon={faHandPaper} /> Signify
+          <FontAwesomeIcon icon={faHandPaper} /> SIGNify
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
