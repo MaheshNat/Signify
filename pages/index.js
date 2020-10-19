@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import service from '../services/service';
-import 'bootswatch/dist/darkly/bootstrap.min.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHandPaper } from '@fortawesome/free-solid-svg-icons';
+import { FormCheck } from 'react-bootstrap';
 
 // We'll limit the processing size to 200px.
 const maxVideoSize = 224;
@@ -36,6 +38,13 @@ const LETTERS = [
 ];
 const THRESHOLD = 5;
 
+const THRESHOLDS = {
+  S: 3,
+  E: 5,
+  A: 5,
+  N: 6,
+  R: 5,
+};
 /**
  * What we're going to render is:
  *
@@ -53,10 +62,9 @@ export default function Page() {
   const outputCanvasEl = useRef(null);
   let [letter, setLetter] = useState(null);
   let [loading, setLoading] = useState(true);
-  let [confidence, setConfidence] = useState(0);
   let [fps, setFps] = useState(0);
   let [words, setWords] = useState('');
-  let spell;
+  let [disableDemo, setDisableDemo] = useState(false);
 
   /**
    * In the onClick event we'll capture a frame within
@@ -105,12 +113,16 @@ export default function Page() {
 
         const prediction = await service.predict(processedImage.data.payload);
 
-        const [predictedLetter, confidence] = prediction.data.payload;
+        const predictedLetter = prediction.data.payload;
         const letterValue = LETTERS[predictedLetter];
 
         setLetter(letterValue);
         if (letterValue !== prevLetter) {
-          if (count > THRESHOLD) {
+          if (
+            !THRESHOLDS[prevLetter]
+              ? count > THRESHOLD
+              : count > THRESHOLDS[prevLetter]
+          ) {
             if (prevLetter === '_SPACE') processWord();
             else {
               _words = _words + (prevLetter === '_NOTHING' ? '' : prevLetter);
@@ -125,7 +137,6 @@ export default function Page() {
           count++;
         }
         prevLetter = letterValue;
-        setConfidence(confidence);
         frames++;
         if (frames === 10) {
           setFps(10 / ((Date.now() - start) / 1000));
@@ -135,6 +146,34 @@ export default function Page() {
       }
     }
   }
+
+  const setVideoStream = () => {
+    setLoading(true);
+    navigator.mediaDevices
+      .getUserMedia({
+        audio: false,
+        video: {
+          facingMode: 'user',
+          width: maxVideoSize,
+          height: maxVideoSize,
+        },
+      })
+      .then((stream) => {
+        videoElement.current.srcObject = stream;
+        videoElement.current.onloadedmetadata = () => {
+          setLoading(false);
+        };
+      });
+  };
+
+  const setVideoDemo = () => {
+    setLoading(true);
+    videoElement.current.src = 'message3.mp4';
+    videoElement.current.playbackRate = 0.8;
+    videoElement.current.onloadedmetadata = () => {
+      setLoading(false);
+    };
+  };
 
   /**
    * In the useEffect hook we'll load the video
@@ -146,17 +185,8 @@ export default function Page() {
       videoElement.current.height = maxVideoSize;
 
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        // const stream = await navigator.mediaDevices.getUserMedia({
-        //   audio: false,
-        //   video: {
-        //     facingMode: 'user',
-        //     width: maxVideoSize,
-        //     height: maxVideoSize,
-        //   },
-        // });
-        // videoElement.current.srcObject = stream;
-        videoElement.current.src = 'message3.mp4';
-        videoElement.current.playbackRate = 0.87;
+        if (disableDemo) setVideoStream();
+        else setVideoDemo();
 
         return new Promise((resolve) => {
           videoElement.current.onloadedmetadata = () => {
@@ -174,7 +204,6 @@ export default function Page() {
       const videoLoaded = await initCamera();
       await service.load();
       setTimeout(() => videoLoaded.play(), 10000);
-      // spell = nspell(dict);
       setTimeout(processImage, 0);
       setLoading(false);
       return videoLoaded;
@@ -184,18 +213,40 @@ export default function Page() {
   }, []);
 
   return (
-    <div className="container" style={{ marginTop: '2em' }}>
-      <div className="jumbotron text-center">
-        <h1>Signify - ASL Made Easy.</h1>
-        <p>
-          A simple sign language translator using machine learning to classify
-          signs by a convolutional neural network.
-        </p>
-      </div>
-      {loading && <h1 className="text-center">Loading...</h1>}
+    <div style={{ marginTop: '2em' }}>
+      <h1
+        className="text-center"
+        style={{ marginBottom: '0.5em', fontSize: 80 }}
+      >
+        <FontAwesomeIcon icon={faHandPaper} /> Signify
+      </h1>
+      {loading && (
+        <div className="row justify-content-center">
+          <div className="col text-center">
+            <div
+              className="spinner-border"
+              style={{ width: '8em', height: '8em', marginBottom: '2em' }}
+              role="status"
+            ></div>
+          </div>
+        </div>
+      )}
       <div style={{ display: loading ? 'none' : 'block' }}>
         <div className="row justify-content-center">
-          <video className="video col-xs-12" playsInline ref={videoElement} />
+          <div className="col-xs-12 text-center">
+            <video className="video" playsInline ref={videoElement} />
+            <FormCheck
+              id="switchEnabled"
+              type="switch"
+              checked={disableDemo}
+              onChange={() => {
+                setDisableDemo((state, props) => !state);
+                if (disableDemo) setVideoStream();
+                else setVideoDemo();
+              }}
+              label="Disable Demo"
+            />
+          </div>
           <canvas
             style={{ display: 'none' }}
             ref={canvasEl}
@@ -204,11 +255,13 @@ export default function Page() {
           ></canvas>
           <canvas
             className="col-xs-12"
+            style={{ display: 'none' }}
             ref={outputCanvasEl}
             width={maxVideoSize}
             height={maxVideoSize}
           ></canvas>
         </div>
+
         <div
           className="row justify-content-center text-center"
           style={{ marginTop: '2em' }}
@@ -219,7 +272,7 @@ export default function Page() {
               style={{
                 borderRadius: 10,
                 border: '2px solid #FFFFFF',
-                padding: '1em',
+                padding: '0.5em',
               }}
             >
               {letter}
@@ -241,8 +294,7 @@ export default function Page() {
             >
               {words}
             </h1>
-            <h4>Confidence: {confidence.toFixed(3)}</h4>
-            <h4>FPS: {fps.toFixed(3)}</h4>
+            <p>FPS: {fps.toFixed(3)}</p>
           </div>
         </div>
       </div>

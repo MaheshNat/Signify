@@ -11,7 +11,7 @@ function predict({ msg, payload }) {
   const prediction = model.predict(tensor);
   const predictedLetter = prediction.argMax(1).dataSync();
   const confidence = prediction.dataSync()[0];
-  postMessage({ msg, payload: [predictedLetter, confidence] });
+  postMessage({ msg, payload: predictedLetter });
   tensor.dispose();
   prediction.dispose();
 }
@@ -35,7 +35,6 @@ function imageProcessing({ msg, payload }) {
     21,
     2
   );
-  // You can try more different parameters
   cv.cvtColor(result, result, cv.COLOR_GRAY2RGB);
 
   postMessage({ msg, payload: imageDataFromMat(result) });
