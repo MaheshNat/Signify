@@ -235,7 +235,7 @@ export default function Page() {
         <div className="row justify-content-center">
           <div className="col-xs-12 text-center">
             <video className="video" playsInline ref={videoElement} />
-            <FormCheck
+            {/* <FormCheck
               id="switchEnabled"
               type="switch"
               checked={disableDemo}
@@ -245,7 +245,7 @@ export default function Page() {
                 else setVideoDemo();
               }}
               label="Disable Demo"
-            />
+            /> */}
           </div>
           <canvas
             style={{ display: 'none' }}
