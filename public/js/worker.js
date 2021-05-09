@@ -1,4 +1,5 @@
 function predict({ msg, payload }) {
+  tf.engine().startScope();
   const tensor = tf.browser
     .fromPixels(payload)
     .div(tf.scalar(127.5))
@@ -14,6 +15,7 @@ function predict({ msg, payload }) {
   postMessage({ msg, payload: predictedLetter });
   tensor.dispose();
   prediction.dispose();
+  tf.engine().endScope();
 }
 
 /**
